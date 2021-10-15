@@ -14,7 +14,8 @@ import dagger.android.support.AndroidSupportInjectionModule;
         //When we add modules here, dagger will create implementation class for the AppComponent
         modules = {
                 AndroidSupportInjectionModule.class,
-                ActivityBuildersModule.class
+                ActivityBuildersModule.class,
+                AppModule.class
         }
 )
 public interface AppComponent extends AndroidInjector<BaseApplication> {

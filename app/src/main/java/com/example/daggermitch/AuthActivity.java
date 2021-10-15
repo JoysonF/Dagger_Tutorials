@@ -12,13 +12,21 @@ import dagger.android.support.DaggerAppCompatActivity;
 public class AuthActivity extends DaggerAppCompatActivity {
 
     private static final String TAG = "AuthActivity";
+
+
     @Inject
     String someString;
+
+    @Inject
+    int someInt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        Log.d(TAG, "onCreate: "+someString);
+        Log.d(TAG, "onCreate String: "+someString);
+        Log.d(TAG, "onCreate int: "+someInt);
+
+
     }
 }
