@@ -7,12 +7,15 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.daggermitch.R;
+import com.example.daggermitch.models.User;
 import com.example.daggermitch.viewmodels.ViewModelProviderFactory;
 
 import javax.inject.Inject;
@@ -39,6 +42,8 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
     private EditText userId;
 
+    private ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_auth);
         userId = findViewById(R.id.user_id_input);
         findViewById(R.id.login_button).setOnClickListener(this);
+        progressBar = findViewById(R.id.progress_bar);
         setLogo();
         authViewModel = new ViewModelProvider(this, providerFactory).get(AuthViewModel.class);
         Log.v("sdagsd", "" + requestOptions);
@@ -56,6 +62,15 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
         requestManager.load(logo).into((ImageView) findViewById(R.id.login_logo));
     }
 
+    private void showProgressBar(boolean isVisible) {
+        if (isVisible) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
+
+    }
+
     @Override
     public void onClick(View view) {
         if (view.getId() == R.id.login_button) {
@@ -64,9 +79,29 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscribeObservers() {
-        authViewModel.observeUser().observe(this, user -> {
-            if (user != null) {
-                Log.d(TAG, "onChanged: " + user.getEmail());
+        authViewModel.observeUser().observe(this, new Observer<AuthResource<User>>() {
+            @Override
+            public void onChanged(AuthResource<User> userAuthResource) {
+                if (userAuthResource != null) {
+                    switch (userAuthResource.status) {
+                        case ERROR:
+                            showProgressBar(false);
+                            break;
+
+                        case LOADING:
+                            showProgressBar(true);
+                            break;
+
+                        case AUTHENTICATED:
+                            showProgressBar(false);
+                            Log.d(TAG, ": success");
+                            break;
+
+                        case NOT_AUTHENTICATED:
+                            showProgressBar(false);
+                            break;
+                    }
+                }
             }
         });
     }
