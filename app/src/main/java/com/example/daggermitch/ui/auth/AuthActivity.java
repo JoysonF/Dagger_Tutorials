@@ -79,13 +79,14 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
     }
 
     private void subscribeObservers() {
-        authViewModel.observeUser().observe(this, new Observer<AuthResource<User>>() {
+        authViewModel.observeAuthState().observe(this, new Observer<AuthResource<User>>() {
             @Override
             public void onChanged(AuthResource<User> userAuthResource) {
                 if (userAuthResource != null) {
                     switch (userAuthResource.status) {
                         case ERROR:
                             showProgressBar(false);
+                            Log.d(TAG, "onChanged LOGIN: error" + userAuthResource.message);
                             break;
 
                         case LOADING:
@@ -94,7 +95,7 @@ public class AuthActivity extends DaggerAppCompatActivity implements View.OnClic
 
                         case AUTHENTICATED:
                             showProgressBar(false);
-                            Log.d(TAG, ": success");
+                            Log.d(TAG, "onChanged LOGIN: success");
                             break;
 
                         case NOT_AUTHENTICATED:
